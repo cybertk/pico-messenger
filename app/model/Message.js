@@ -1,4 +1,4 @@
-Ext.define('Message', {
+Ext.define('GS.model.Message', {
   extend: 'Ext.data.Model',
 
   config: {

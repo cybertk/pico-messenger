@@ -1,4 +1,4 @@
-Ext.define('Session', {
+Ext.define('GS.model.Session', {
   extend: 'Ext.data.Model',
 
   config: {
