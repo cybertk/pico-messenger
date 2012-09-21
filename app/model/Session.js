@@ -1,3 +1,10 @@
 Ext.define('Session', {
-  extend:
+  extend: 'Ext.data.Model',
+
+  config: {
+    fields: ['id', 'peer'],
+    
+    hasMany: 'Message'
+  }
+
 });
