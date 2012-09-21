@@ -3,10 +3,11 @@ Ext.define("GS.view.Main", {
     xtype: 'mainpanel',
 
     requires: [
-        'Ext.TitleBar',
+        'GS.view.SessionList'
     ],
     config: {
         items: [
+          {xtype: 'sessionlist'}
         ]
     }
 });
