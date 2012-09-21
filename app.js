@@ -5,6 +5,8 @@ Ext.application({
       'Ext.MessageBox'
   ],
 
+ 
+  controllers: ['SessionList'],
   views: ['Main'],
   stores: ['Message', 'Session'],
   models: ['Message', 'Session'],
