@@ -1,13 +1,11 @@
 Ext.define('GS.view.SessionDetail', {
-  extend: 'Ext.Panel',
+  extend: 'Ext.List',
   xtype: 'sessiondetail',
-  requires: ['GS.store.Session'],
+  requires: ['GS.store.Message'],
 
   config: {
     title: 'Details',
-    scrollable: 'vertical',
-    tpl: [
-      'Hello {peer}'
-    ]
+    itemTpl: '{id}, {direction}, {text}',
+    store: 'Message',
   }
 });
