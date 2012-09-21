@@ -8,12 +8,12 @@ Ext.define('GS.controller.SessionList', {
 
     control: {
       'sessionlist': {
-        disclose: 'showSessionDetail'
+        itemtap: 'showSessionDetail'
       }
     }
   },
 
-  showSessionDetail: function(list, session) {
+  showSessionDetail: function(list, index, target, session) {
     this.getMain().push({
       xtype: 'sessiondetail',
       title: session.get('peer'),

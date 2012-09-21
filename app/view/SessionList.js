@@ -7,6 +7,5 @@ Ext.define('GS.view.SessionList', {
     title: 'Session List',
     itemTpl: '{id}, {peer}',
     store: 'Session',
-    onItemDisclosure: true
   }
 });
