@@ -8,7 +8,7 @@ Ext.application({
  
   controllers: ['SessionList'],
   views: ['Main'],
-  stores: ['Message', 'Session'],
+  stores: ['Sessions', 'SessionMessages'],
   models: ['Message', 'Session'],
 
   launch: function() {

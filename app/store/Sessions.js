@@ -1,4 +1,4 @@
-Ext.define('GS.store.Session', {
+Ext.define('GS.store.Sessions', {
   extend: 'Ext.data.Store',
 
   config: {
