@@ -1,3 +1,6 @@
+// Implement as class static member, active().
+var currentSession = null;
+
 Ext.define('GS.controller.SessionList', {
   extend: 'Ext.app.Controller',
 
@@ -25,6 +28,8 @@ Ext.define('GS.controller.SessionList', {
       title: session.get('peer'),
       data: session.getData()
     });
+
+    currentSession = session;
   },
 
   sendMessage: function() {
@@ -34,6 +39,22 @@ Ext.define('GS.controller.SessionList', {
     var msg = $msg({from: 'web@ejabberd.local', to: 'alice@ejabberd.local'}).cnode(body).t(message);
 
     connection.send(msg.tree());
+
+    console.log(currentSession.get('messages'));
+
+    var Session = Ext.ModelMgr.getModel('GS.model.Session');
+    var session = currentSession;
+
+    session.messages().add({
+      direction: 'dir-send',
+      time: Date.now(),
+      text: message
+    });
+
+    session.messages().sync();
+
+    console.log(currentSession.get('messages'));
+    console.log(currentSession.getData());
   }
 
 });
