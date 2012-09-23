@@ -30,7 +30,10 @@ Ext.define('GS.controller.SessionList', {
   sendMessage: function() {
 
     var message = Ext.ComponentQuery.query('#message')[0].getValue(); 
-    console.log(message);
+    var body = Strophe.xmlElement('body');
+    var msg = $msg({from: 'web@ejabberd.local', to: 'alice@ejabberd.local'}).cnode(body).t(message);
+
+    connection.send(msg.tree());
   }
 
 });
