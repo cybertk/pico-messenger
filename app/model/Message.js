@@ -4,6 +4,6 @@ Ext.define('GS.model.Message', {
   config: {
     fields: ['id', 'session_id', 'direction', 'time', 'text'],
 
-    belongsTo: 'Session'
+    belongsTo: 'GS.model.Session'
   }
 });

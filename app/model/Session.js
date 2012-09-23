@@ -4,7 +4,10 @@ Ext.define('GS.model.Session', {
   config: {
     fields: ['id', 'peer'],
     
-    hasMany: 'Message'
+    hasMany: {
+      model: 'GS.model.Message',
+      name: 'messages'
+    }
   }
 
 });
