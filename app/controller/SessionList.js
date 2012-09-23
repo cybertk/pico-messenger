@@ -3,12 +3,18 @@ Ext.define('GS.controller.SessionList', {
 
   config: {
     refs: {
-      main: 'mainpanel'
+      main: 'mainpanel',
+      session: 'session',
+      sessionSend: "sessionSend",
+      sendButton: 'button[id=SendMessage]',
     },
 
     control: {
       'sessionlist': {
         itemtap: 'showSessionDetail'
+      },
+      'button[id=SendMessage]': {
+        tap: 'sendMessage'
       }
     }
   },
@@ -19,5 +25,12 @@ Ext.define('GS.controller.SessionList', {
       title: session.get('peer'),
       data: session.getData()
     });
+  },
+
+  sendMessage: function() {
+
+    var message = Ext.ComponentQuery.query('#message')[0].getValue(); 
+    console.log(message);
   }
+
 });

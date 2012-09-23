@@ -13,11 +13,13 @@ Ext.define('GS.view.session.Send', {
         xtype: 'textfield',
         flex: 1,
         text: 'Send',
-        placeHolder: 'Text Message'
+        placeHolder: 'Text Message',
+        id: 'message'
       },
       { 
         xtype: 'button',
         text: 'Send',
+        id: 'SendMessage'
       }
     ]
   }
