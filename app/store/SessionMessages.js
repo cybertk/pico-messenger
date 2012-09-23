@@ -4,6 +4,8 @@ Ext.define('GS.store.SessionMessages', {
   config: {
     model: 'GS.model.Message',
 
+    remoteFilter: true,
+
     proxy: {
       type: 'ajax',
       url: 'test/messages.json',

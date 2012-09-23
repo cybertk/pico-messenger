@@ -39,12 +39,20 @@ Ext.define('GS.controller.Sessions', {
 
     this.getMain().push(this.session)
 
-
     this.messageStore.removeAll();
+
+    // Setup filter.
+    this.messageStore.clearFilter();
+    this.messageStore.filter([
+      {
+        property: 'session_id',
+        value: record.get('id')
+      }
+    ]);
 
     this.messageStore.load({
       callback: this.onSessionMessagesStoreLoad,
-      scope: this
+      scope: this,
     });
   },
 
