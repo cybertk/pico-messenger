@@ -1,7 +1,7 @@
 // Implement as class static member, active().
 var currentSession = null;
 
-Ext.define('GS.controller.SessionList', {
+Ext.define('GS.controller.Sessions', {
   extend: 'Ext.app.Controller',
 
   config: {

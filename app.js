@@ -6,7 +6,7 @@ Ext.application({
   ],
 
  
-  controllers: ['SessionList'],
+  controllers: ['Sessions'],
   views: ['Main'],
   stores: ['Sessions', 'SessionMessages'],
   models: ['Message', 'Session'],
