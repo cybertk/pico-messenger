@@ -1,6 +1,6 @@
-Ext.define('GS.view.SessionDetail', {
+Ext.define('GS.view.session.Detail', {
   extend: 'Ext.List',
-  xtype: 'sessiondetail',
+  xtype: 'sessionDetail',
   requires: ['GS.store.Message'],
 
   config: {

@@ -15,7 +15,7 @@ Ext.define('GS.controller.SessionList', {
 
   showSessionDetail: function(list, index, target, session) {
     this.getMain().push({
-      xtype: 'sessiondetail',
+      xtype: 'session',
       title: session.get('peer'),
       data: session.getData()
     });
