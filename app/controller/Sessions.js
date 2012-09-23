@@ -7,14 +7,17 @@ Ext.define('GS.controller.Sessions', {
   config: {
     refs: {
       main: 'mainpanel',
+      sessions: "sessionlist",
       session: 'session',
+      messageList: "session sessionDetail",
       sessionSend: "sessionSend",
       sendButton: 'button[id=SendMessage]',
     },
 
     control: {
-      'sessionlist': {
-        itemtap: 'showSessionDetail'
+      sessions: {
+        initialize: 'initSessions',
+        itemtap: 'onSessionTap'
       },
       'button[id=SendMessage]': {
         tap: 'sendMessage'
@@ -22,14 +25,36 @@ Ext.define('GS.controller.Sessions', {
     }
   },
 
-  showSessionDetail: function(list, index, target, session) {
-    this.getMain().push({
-      xtype: 'session',
-      title: session.get('peer'),
-      data: session.getData()
-    });
+  initSessions: function() {
+    this.messageStore = Ext.getStore('SessionMessages');
+  },
 
-    currentSession = session;
+  // Show session detail and load the messages.
+  onSessionTap: function(list, idx, el, record) {
+
+    // TODO: reuse
+    //if (!this.session) {
+    this.session = Ext.widget('session');
+    //}
+
+    this.getMain().push(this.session)
+
+
+    this.messageStore.removeAll();
+
+    this.messageStore.load({
+      callback: this.onSessionMessagesStoreLoad,
+      scope: this
+    });
+  },
+
+  // The SessionMessage is loaded. show them.
+  onSessionMessagesStoreLoad: function(records, operation, success) {
+
+    var messageStore = records[0].stores[0];
+
+    this.getMessageList().setStore(messageStore);
+
   },
 
   sendMessage: function() {

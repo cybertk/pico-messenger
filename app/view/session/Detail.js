@@ -6,6 +6,5 @@ Ext.define('GS.view.session.Detail', {
   config: {
     title: 'Details',
     itemTpl: '{id}, {direction}, {text}',
-    store: 'Message',
   }
 });
