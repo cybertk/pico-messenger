@@ -1,10 +1,28 @@
 Ext.define('GS.view.session.Detail', {
-  extend: 'Ext.List',
-  xtype: 'sessionDetail',
-  requires: ['GS.store.Message'],
+  extend: 'Ext.Panel',
+  xtype: 'session',
+
+  requires: [
+    "GS.view.session.MessageList",
+    "GS.view.session.SendBar"
+  ],
 
   config: {
-    title: 'Details',
-    itemTpl: '{id}, {direction}, {text}',
+
+    layout: 'vbox',
+
+    scrollable: false,
+
+    title: 'Session',
+
+    items: [
+      {
+        xtype: 'messagelist',
+        flex: 1
+      },
+      {
+        xtype: 'messagesendbar',
+      }
+    ]
   }
 });

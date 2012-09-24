@@ -9,8 +9,7 @@ Ext.define('GS.controller.Sessions', {
       main: 'mainpanel',
       sessions: "sessionlist",
       session: 'session',
-      messageList: "session sessionDetail",
-      sessionSend: "sessionSend",
+      messageList: "session messagelist",
       sendButton: 'button[id=SendMessage]',
     },
 
