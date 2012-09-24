@@ -88,7 +88,8 @@ Ext.define('GS.controller.Sessions', {
 
   sendMessage: function() {
 
-    var message = Ext.ComponentQuery.query('#message')[0].getValue(); 
+    var messageField = Ext.ComponentQuery.query('#message')[0];
+    var message = messageField.getValue(); 
     var body = Strophe.xmlElement('body');
     var msg = $msg({from: 'web@ejabberd.local', to: 'alice@ejabberd.local'}).cnode(body).t(message);
 
@@ -102,6 +103,9 @@ Ext.define('GS.controller.Sessions', {
 
     // TODO: POST to REST API.
     //this.messageStore.sync();
+
+    // Reset if success.
+    messageField.reset();
 
     console.log(this.messageStore);
   }
