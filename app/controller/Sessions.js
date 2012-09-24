@@ -95,7 +95,7 @@ Ext.define('GS.controller.Sessions', {
     connection.send(msg.tree());
 
     this.messageStore.add({
-      direction: 'dir-send',
+      direction: 'tx',
       time: Date.now(),
       text: message
     });
