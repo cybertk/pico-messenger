@@ -4,9 +4,14 @@ Ext.define('GS.store.Session', {
   config: {
     model: "GS.model.Session",
 
-    data: [
-      { id:1, peer: "caoxx"},
-      { id:2, peer: "xxcao"}
-    ]
+    proxy: {
+      type: 'ajax',
+      url: 'test/sessions.json',
+      reader: {
+        type: 'json'
+      }
+    },
+
+    autoLoad: true
   }
 });
