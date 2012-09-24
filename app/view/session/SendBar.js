@@ -14,7 +14,8 @@ Ext.define('GS.view.session.SendBar', {
     items: [
       {
         xtype: 'button',
-        text: 'avatar'
+        iconMask: true,
+        iconCls: 'add'
       },
       { 
         xtype: 'textfield',
