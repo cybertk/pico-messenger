@@ -19,6 +19,9 @@ Ext.define('GS.controller.Sessions', {
         initialize: 'initSessions',
         itemtap: 'onSessionTap'
       },
+      session: {
+        initialize: 'initSession',
+      },
       'button[id=SendMessage]': {
         tap: 'sendMessage'
       }
@@ -29,6 +32,24 @@ Ext.define('GS.controller.Sessions', {
     this.messageStore = Ext.getStore('SessionMessages');
   },
 
+  initSession: function() {
+    this.messageStore.addAfterListener('addrecords',
+        this.onMessageStoreAddRecords, this, {delay:200});
+    console.log('init');
+  },
+
+  onMessageStoreAddRecords: function() {
+    console.log('onadd');
+
+    // Scroll to bottom.
+    var scroller = this.getMessageList().getScrollable().getScroller();
+    
+    scroller.scrollToEnd();
+  },
+
+  onMessageListRefresh: function() {
+    console.log('aa');
+  },
   // Show session detail and load the messages.
   onSessionTap: function(list, idx, el, record) {
 
@@ -73,21 +94,16 @@ Ext.define('GS.controller.Sessions', {
 
     connection.send(msg.tree());
 
-    console.log(currentSession.get('messages'));
-
-    var Session = Ext.ModelMgr.getModel('GS.model.Session');
-    var session = currentSession;
-
-    session.messages().add({
+    this.messageStore.add({
       direction: 'dir-send',
       time: Date.now(),
       text: message
     });
 
-    session.messages().sync();
+    // TODO: POST to REST API.
+    //this.messageStore.sync();
 
-    console.log(currentSession.get('messages'));
-    console.log(currentSession.getData());
+    console.log(this.messageStore);
   }
 
 });
