@@ -201,15 +201,13 @@ Ext.define('GS.controller.Sessions', {
 
   saveMessage: function(msg) {
 
-    console.log('save:');
     var sessionStore = Ext.getStore('Sessions'),
-        idx = sessionStore.findExact('peer', msg.peer),
+        idx = sessionStore.findExact('peer', msg.peer.toLowerCase()),
         session, session_id;
 
-    console.log('idx:' + idx);
     if (idx == -1) {
 
-      session = sessionStore.add({ peer: msg.peer})[0];
+      session = sessionStore.add({ peer: msg.peer.toLowerCase()})[0];
       console.log("Create new seesion ");
       sessionStore.sync();
     } else {
