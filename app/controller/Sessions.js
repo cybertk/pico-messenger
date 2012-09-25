@@ -1,6 +1,3 @@
-// Implement as class static member, active().
-var activeSession = null;
-
 Ext.define('GS.controller.Sessions', {
   extend: 'Ext.app.Controller',
 
@@ -16,6 +13,7 @@ Ext.define('GS.controller.Sessions', {
       editSessionsButton: '#editSessionsButton',
       composeButton: '#composeButton',
       composePeerField: "sessioncompose #peerField",
+      composeMessageField: "sessioncompose #messageField",
       sendComposeMessageButton: 'sessioncompose #sendMessageButton'
     },
 
@@ -23,7 +21,6 @@ Ext.define('GS.controller.Sessions', {
       main: {
         push: 'onMainPush',
         pop: 'onMainPop',
-        initialize: 'init'
       },
 
       sessions: {
@@ -33,6 +30,18 @@ Ext.define('GS.controller.Sessions', {
       session: {
         initialize: 'initSession',
       },
+      sessionMessageField: {
+        keyup: "onMessageFieldChange"
+      },
+      composeMessageField: {
+        keyup: "onMessageFieldChange"
+      },
+      composePeerField: {
+        keyup: "onPeerFieldChange"
+      },
+      sendMessageButton: {
+        tap: 'onSendMessageButtonTap'
+      },
       sendSessionMessageButton: {
         tap: 'onSendSessionMessageButtonTap'
       },
@@ -41,16 +50,19 @@ Ext.define('GS.controller.Sessions', {
       },
       composeButton: {
         tap: 'onComposeButtonTap'
-      },
+      }
+    },
 
-      activeSession: undefined,
-      activeNavItem: undefined
-    }
+    // Peer of current active session.
+    activePeer: undefined,
+    activeNavItem: undefined
   },
 
+  // @overide
   init: function() {
 
-    console.log("rolling in the deep");
+    this.activePeer = '';
+
     // TODO find somewhere better to carry init xmpp code.
     // XMPP Auth and listening.
     xmpp_init(this.onXmppMessage);
@@ -65,8 +77,8 @@ Ext.define('GS.controller.Sessions', {
 
     if (item.xtype == 'session') {
 
-      // Reset Session.
-      this.activeSession = undefined;
+      // Reset active peer.
+      this.activePeer = '';
     }
 
     this.updateNavBar();
@@ -156,7 +168,7 @@ Ext.define('GS.controller.Sessions', {
         session_id = session.get('id');
 
     // Update active session.
-    this.activeSession = session;
+    this.activePeer = peer;
 
     // TODO: reuse
     //if (!this.session) {
@@ -221,7 +233,7 @@ Ext.define('GS.controller.Sessions', {
   onSendSessionMessageButtonTap: function(btn) {
 
     var messageField = this.getSessionMessageField(),
-        peer = this.activeSession.get('peer'),
+        peer = this.activePeer,
         text = messageField.getValue();
 
     this.saveMessage({ peer: peer, direction: 'tx', text: text});
@@ -276,5 +288,27 @@ Ext.define('GS.controller.Sessions', {
     this.compose = Ext.widget('sessioncompose');
 
     this.getMain().push(this.compose);
-  }
+  },
+  
+  onMessageFieldChange: function(field) {
+
+    var text = field.getValue(),
+        button = field.getParent().child('#sendMessageButton');
+
+    if (text != '' && this.activePeer != '') {
+      button.enable();
+    } else {
+      button.disable();
+    }
+  },
+
+  onPeerFieldChange: function(field) {
+
+    var messageField = this.getComposeMessageField();
+
+    this.activePeer = field.getValue();
+
+    // Trigger message field validation.
+    messageField.fireEvent('keyup', messageField);
+  },
 });

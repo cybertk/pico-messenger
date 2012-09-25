@@ -28,6 +28,7 @@ Ext.define('GS.view.session.SendBar', {
       { 
         xtype: 'button',
         text: 'Send',
+        disabled: true,
         id: 'sendMessageButton'
       }
     ]
