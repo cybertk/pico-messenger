@@ -10,10 +10,11 @@ Ext.define('GS.controller.Sessions', {
       sessions: "sessionlist",
       session: 'session',
       messageList: "session messagelist",
-      sendMessageButton: '#sendMessageButton',
+      sendSessionMessageButton: 'session #sendMessageButton',
       editMessagesButton: '#editMessagesButton',
       editSessionsButton: '#editSessionsButton',
-      composeButton: '#composeButton'
+      composeButton: '#composeButton',
+      sendComposeMessageButton: 'sessioncompose #sendMessageButton'
     },
 
     control: {
@@ -29,12 +30,17 @@ Ext.define('GS.controller.Sessions', {
       session: {
         initialize: 'initSession',
       },
-      sendMessageButton: {
-        tap: 'onSendMessageButtonTap'
+      sendSessionMessageButton: {
+        tap: 'onSendSessionMessageButtonTap'
+      },
+      sendComposeMessageButton: {
+        tap: 'onSendComposeMessageButtonTap'
       },
       composeButton: {
         tap: 'onComposeButtonTap'
-      }
+      },
+
+      currentSession: undefined
     }
   },
 
@@ -65,6 +71,9 @@ Ext.define('GS.controller.Sessions', {
 
     console.log('pop ' + item.xtype);
     if (item.xtype == 'session') {
+
+      // Reset Session.
+      this.currentSession = undefined;
 
       // Reverse operation of onMainPush
       editMessagesButton.hide();
@@ -99,14 +108,21 @@ Ext.define('GS.controller.Sessions', {
   onMessageListRefresh: function() {
     console.log('aa');
   },
+
   // Show session detail and load the messages.
   onSessionTap: function(list, idx, el, record) {
+
+    // Update current session.
+    this.currentSession = record;
 
     // TODO: reuse
     //if (!this.session) {
     this.session = Ext.widget('session');
     //}
 
+    var peer = record.get('peer');
+
+    this.session.setTitle(peer);
     this.getMain().push(this.session)
 
     this.messageStore.removeAll();
@@ -135,20 +151,20 @@ Ext.define('GS.controller.Sessions', {
 
   },
 
-  onSendMessageButtonTap: function() {
+  onSendSessionMessageButtonTap: function() {
 
     var messageField = Ext.ComponentQuery.query('#message')[0];
     var message = messageField.getValue(); 
-    var body = Strophe.xmlElement('body');
-    var msg = $msg({from: 'web@ejabberd.local', to: 'alice@ejabberd.local'}).cnode(body).t(message);
 
-    connection.send(msg.tree());
-
-    this.messageStore.add({
+    var msg = {
       direction: 'tx',
       time: Date.now(),
       text: message
-    });
+    };
+
+    this.messageStore.add(msg);
+
+    this.sendXmppMessage(this.currentSession.get('peer'), msg.text);
 
     // TODO: POST to REST API.
     //this.messageStore.sync();
@@ -157,6 +173,24 @@ Ext.define('GS.controller.Sessions', {
     messageField.reset();
 
     console.log(this.messageStore);
+  },
+
+  onSendComposeMessageButtonTap: function() {
+    this.sendXmppMessage('alice@ejabberd.local', 'a');
+  },
+
+  sendXmppMessage: function(peer, text) {
+
+    console.log('send to ' + peer + ': ' + text);
+
+    var msg = $msg({
+      from: __JID,
+      to: peer
+      })
+      .cnode(Strophe.xmlElement('body'))
+      .t(text);
+
+    connection.send(msg.tree());
   },
 
   // Compose new message.
