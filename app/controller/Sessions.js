@@ -50,6 +50,10 @@ Ext.define('GS.controller.Sessions', {
       composeButton.hide();
       editSessionsButton.hide();
       editMessagesButton.show();
+    } else if (item.xtype == 'sessioncompose') {
+
+      composeButton.hide();
+      editSessionsButton.hide();
     }
   },
 
@@ -66,6 +70,10 @@ Ext.define('GS.controller.Sessions', {
       editMessagesButton.hide();
       editSessionsButton.show();
       composeButton.show();
+    } else if (item.xtype == 'sessioncompose') {
+
+      composeButton.show();
+      editSessionsButton.show();
     }
   },
 
