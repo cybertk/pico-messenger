@@ -28,8 +28,7 @@ Ext.define('GS.view.session.SendBar', {
       { 
         xtype: 'button',
         text: 'Send',
-        // TODO Remove
-        id: 'SendMessage'
+        id: 'sendMessageButton'
       }
     ]
   }

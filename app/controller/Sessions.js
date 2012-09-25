@@ -10,7 +10,7 @@ Ext.define('GS.controller.Sessions', {
       sessions: "sessionlist",
       session: 'session',
       messageList: "session messagelist",
-      sendButton: 'button[id=SendMessage]',
+      sendMessageButton: '#sendMessageButton',
       editMessagesButton: '#editMessagesButton',
       editSessionsButton: '#editSessionsButton',
       composeButton: '#composeButton'
@@ -29,8 +29,8 @@ Ext.define('GS.controller.Sessions', {
       session: {
         initialize: 'initSession',
       },
-      'button[id=SendMessage]': {
-        tap: 'sendMessage'
+      sendMessageButton: {
+        tap: 'onSendMessageButtonTap'
       },
       composeButton: {
         tap: 'onComposeButtonTap'
@@ -135,7 +135,7 @@ Ext.define('GS.controller.Sessions', {
 
   },
 
-  sendMessage: function() {
+  onSendMessageButtonTap: function() {
 
     var messageField = Ext.ComponentQuery.query('#message')[0];
     var message = messageField.getValue(); 
