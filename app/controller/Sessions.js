@@ -129,9 +129,10 @@ Ext.define('GS.controller.Sessions', {
         text: text
       };
 
-      var controller = GS.app.getController('Sessions');
+      var messageStore = Ext.getStore('SessionMessages');
 
-      controller.messageStore.add(msg);
+      messageStore.add(msg);
+      messageStore.sync();
     }
 
     return true;
@@ -172,8 +173,6 @@ Ext.define('GS.controller.Sessions', {
     this.session.setTitle(peer);
     this.getMain().push(this.session)
 
-    this.messageStore.removeAll();
-
     // Setup filter.
     this.messageStore.clearFilter();
     this.messageStore.filter([
@@ -182,6 +181,7 @@ Ext.define('GS.controller.Sessions', {
         value: record.get('id')
       }
     ]);
+    */
 
     this.messageStore.load({
       callback: this.onSessionMessagesStoreLoad,
