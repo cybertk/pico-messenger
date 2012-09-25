@@ -17,7 +17,8 @@ Ext.define('GS.view.Compose', {
         xtype: 'textfield',
         label: 'To:',
         labelWidth: 50,
-        placeHolder: "Your friend's Jabber ID"
+        placeHolder: "Your friend's Jabber ID",
+        id: 'peerField'
       },
       {
         xtype: 'panel',

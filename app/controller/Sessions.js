@@ -14,6 +14,7 @@ Ext.define('GS.controller.Sessions', {
       editMessagesButton: '#editMessagesButton',
       editSessionsButton: '#editSessionsButton',
       composeButton: '#composeButton',
+      composePeerField: "sessioncompose #peerField",
       sendComposeMessageButton: 'sessioncompose #sendMessageButton'
     },
 
@@ -151,15 +152,14 @@ Ext.define('GS.controller.Sessions', {
 
   },
 
-  onSendSessionMessageButtonTap: function() {
+  onSendSessionMessageButtonTap: function(btn) {
 
-    var messageField = Ext.ComponentQuery.query('#message')[0];
-    var message = messageField.getValue(); 
+    var text = btn.getParent().child('#messageField').getValue();
 
     var msg = {
       direction: 'tx',
       time: Date.now(),
-      text: message
+      text: text
     };
 
     this.messageStore.add(msg);
@@ -175,8 +175,13 @@ Ext.define('GS.controller.Sessions', {
     console.log(this.messageStore);
   },
 
-  onSendComposeMessageButtonTap: function() {
-    this.sendXmppMessage('alice@ejabberd.local', 'a');
+  onSendComposeMessageButtonTap: function(btn) {
+
+    var text = btn.getParent().child('#messageField').getValue();
+    
+    var peer = this.getComposePeerField().getValue();
+
+    this.sendXmppMessage(peer, text);
   },
 
   sendXmppMessage: function(peer, text) {

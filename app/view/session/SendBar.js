@@ -23,7 +23,7 @@ Ext.define('GS.view.session.SendBar', {
         text: 'Send',
         placeHolder: 'Text Message',
         // TODO Remove
-        id: 'message',
+        id: 'messageField',
       },
       { 
         xtype: 'button',
