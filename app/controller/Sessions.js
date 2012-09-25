@@ -1,5 +1,5 @@
 // Implement as class static member, active().
-var currentSession = null;
+var activeSession = null;
 
 Ext.define('GS.controller.Sessions', {
   extend: 'Ext.app.Controller',
@@ -43,7 +43,7 @@ Ext.define('GS.controller.Sessions', {
         tap: 'onComposeButtonTap'
       },
 
-      currentSession: undefined,
+      activeSession: undefined,
       activeNavItem: undefined
     }
   },
@@ -66,7 +66,7 @@ Ext.define('GS.controller.Sessions', {
     if (item.xtype == 'session') {
 
       // Reset Session.
-      this.currentSession = undefined;
+      this.activeSession = undefined;
     }
 
     this.updateNavBar();
@@ -109,6 +109,10 @@ Ext.define('GS.controller.Sessions', {
 
   initSessions: function() {
     this.messageStore = Ext.getStore('SessionMessages');
+    this.messageStore.load({
+      callback: this.onSessionMessagesStoreLoad,
+      scope: this,
+    });
   },
   
   onXmppMessage: function(msg) {
@@ -119,20 +123,13 @@ Ext.define('GS.controller.Sessions', {
 
     if (type == "chat" && elems.length > 0) {
 
-      var text = Strophe.getText(elems[0]);
+      var text = Strophe.getText(elems[0]),
+          peer = from.split('/')[0];
 
-	    log('recv from: ' + from + ' ' + text);
+	    log('recv from: ' + peer + ' ' + text);
 
-      var msg = {
-        direction: 'rx',
-        time: Date.now(),
-        text: text
-      };
-
-      var messageStore = Ext.getStore('SessionMessages');
-
-      messageStore.add(msg);
-      messageStore.sync();
+      GS.app.getController('Sessions')
+        .saveMessage({ peer: peer, direction: 'rx', text: text});
     }
 
     return true;
@@ -153,40 +150,31 @@ Ext.define('GS.controller.Sessions', {
     scroller.scrollToEnd();
   },
 
-  onMessageListRefresh: function() {
-    console.log('aa');
-  },
+  switchSession: function(session) {
 
-  // Show session detail and load the messages.
-  onSessionTap: function(list, idx, el, record) {
+    var peer = session.get('peer'),
+        session_id = session.get('id');
 
-    // Update current session.
-    this.currentSession = record;
+    // Update active session.
+    this.activeSession = session;
 
     // TODO: reuse
     //if (!this.session) {
     this.session = Ext.widget('session');
     //}
-
-    var peer = record.get('peer');
-
+    //
     this.session.setTitle(peer);
     this.getMain().push(this.session)
 
-    // Setup filter.
-    this.messageStore.clearFilter();
-    this.messageStore.filter([
-      {
-        property: 'session_id',
-        value: record.get('id')
-      }
-    ]);
-    */
+    this.messageStore.filter('session_id', session_id);
 
-    this.messageStore.load({
-      callback: this.onSessionMessagesStoreLoad,
-      scope: this,
-    });
+    console.log("active session: " + peer);
+  },
+
+  // Show session detail and load the messages.
+  onSessionTap: function(list, idx, el, record) {
+
+    this.switchSession(record);
   },
 
   // The SessionMessage is loaded. show them.
@@ -197,95 +185,75 @@ Ext.define('GS.controller.Sessions', {
     if (records.length == 0) {
       return;
     }
+  },
 
-    var messageStore = Ext.getStore('SessionMessages');
-    console.log(messageStore);
+  saveMessage: function(msg) {
 
-    //this.getMessageList().setStore(this.messageStore);
+    console.log('save:');
+    var sessionStore = Ext.getStore('Sessions'),
+        idx = sessionStore.findExact('peer', msg.peer),
+        session, session_id;
 
+    console.log('idx:' + idx);
+    if (idx == -1) {
+
+      session = sessionStore.add({ peer: msg.peer})[0];
+      console.log("Create new seesion ");
+      sessionStore.sync();
+    } else {
+      session = sessionStore.getAt(idx);
+    }
+
+    session_id = session.get('id');
+
+    // Update message.
+    msg.session_id = session_id;
+    msg.time = Date.now();
+
+    // TODO validate message.
+
+    this.messageStore.add(msg);
+    this.messageStore.sync();
+
+    return session;
   },
 
   onSendSessionMessageButtonTap: function(btn) {
 
     var messageField = this.getSessionMessageField(),
+        peer = this.activeSession.get('peer'),
         text = messageField.getValue();
 
-    var msg = {
-      direction: 'tx',
-      time: Date.now(),
-      text: text
-    };
-
-    this.messageStore.add(msg);
-    this.messageStore.sync();
-
-    this.sendXmppMessage(this.currentSession.get('peer'), msg.text);
-
-    // TODO: POST to REST API.
-    //this.messageStore.sync();
+    this.saveMessage({ peer: peer, direction: 'tx', text: text});
+    this.sendXmppMessage(peer, text);
 
     // Reset if success.
     messageField.reset();
-
-    console.log(this.messageStore);
   },
 
   onSendComposeMessageButtonTap: function(btn) {
 
-    var text = btn.getParent().child('#messageField').getValue();
-    
-    var peer = this.getComposePeerField().getValue();
+    var text = btn.getParent().child('#messageField').getValue(),
+        peer = this.getComposePeerField().getValue(),
+        msg, session;
 
-    var msg = {
+    msg = {
+      peer: peer,
       direction: 'tx',
-      time: Date.now(),
       text: text
     };
 
-    this.messageStore.add(msg);
+    session = this.saveMessage(msg);
     this.sendXmppMessage(peer, text);
 
-    // Add session.
-    var sessionStore = Ext.getStore('Sessions');
-
-    var idx = sessionStore.findExact('peer', peer);
-    if (idx == -1) {
-
-      sessionStore.add({ peer: peer});
-      console.log("Create new seesion ");
-    }
-    sessionStore.sync();
-
-    this.redirectToSession(peer);
+    this.redirectToSession(session);
   },
 
-  redirectToSession: function(peer) {
+  redirectToSession: function(session) {
 
-    this.session = Ext.widget('session');
-    //}
-
-    this.session.setTitle(peer);
     this.getMain().pop();
-    this.getMain().push(this.session)
 
-    this.messageStore.removeAll();
-
-    // Setup filter.
-    /*
-    this.messageStore.clearFilter();
-    this.messageStore.filter([
-      {
-        property: 'session_id',
-        // TODO
-        value: 1
-      }
-    ]);
-    */
-
-    this.messageStore.load({
-      callback: this.onSessionMessagesStoreLoad,
-      scope: this,
-    });
+    this.switchSession(session);
   },
 
   sendXmppMessage: function(peer, text) {
