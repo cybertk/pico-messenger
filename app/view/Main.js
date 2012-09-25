@@ -3,7 +3,8 @@ Ext.define("GS.view.Main", {
     xtype: 'mainpanel',
 
     requires: [
-        'GS.view.SessionList'
+        'GS.view.SessionList',
+        'GS.view.Compose'
     ],
     config: {
 

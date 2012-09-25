@@ -31,6 +31,9 @@ Ext.define('GS.controller.Sessions', {
       },
       'button[id=SendMessage]': {
         tap: 'sendMessage'
+      },
+      composeButton: {
+        tap: 'onComposeButtonTap'
       }
     }
   },
@@ -146,6 +149,13 @@ Ext.define('GS.controller.Sessions', {
     messageField.reset();
 
     console.log(this.messageStore);
-  }
+  },
 
+  // Compose new message.
+  onComposeButtonTap: function() {
+    
+    this.compose = Ext.widget('sessioncompose');
+
+    this.getMain().push(this.compose);
+  }
 });
