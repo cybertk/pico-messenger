@@ -11,9 +11,17 @@ Ext.define('GS.controller.Sessions', {
       session: 'session',
       messageList: "session messagelist",
       sendButton: 'button[id=SendMessage]',
+      editMessagesButton: '#editMessagesButton',
+      editSessionsButton: '#editSessionsButton',
+      composeButton: '#composeButton'
     },
 
     control: {
+      main: {
+        push: 'onMainPush',
+        pop: 'onMainPop'
+      },
+
       sessions: {
         initialize: 'initSessions',
         itemtap: 'onSessionTap'
@@ -24,6 +32,37 @@ Ext.define('GS.controller.Sessions', {
       'button[id=SendMessage]': {
         tap: 'sendMessage'
       }
+    }
+  },
+
+  onMainPush: function(view, item) {
+
+    var editSessionsButton = this.getEditSessionsButton();
+    var editMessagesButton = this.getEditMessagesButton();
+    var composeButton = this.getComposeButton();
+
+    console.log('push ' + item.xtype);
+    if (item.xtype == 'session') {
+
+      composeButton.hide();
+      editSessionsButton.hide();
+      editMessagesButton.show();
+    }
+  },
+
+  onMainPop: function(view, item) {
+
+    var editSessionsButton = this.getEditSessionsButton();
+    var editMessagesButton = this.getEditMessagesButton();
+    var composeButton = this.getComposeButton();
+
+    console.log('pop ' + item.xtype);
+    if (item.xtype == 'session') {
+
+      // Reverse operation of onMainPush
+      editMessagesButton.hide();
+      editSessionsButton.show();
+      composeButton.show();
     }
   },
 
