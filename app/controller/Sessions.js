@@ -231,6 +231,7 @@ Ext.define('GS.controller.Sessions', {
   onSendSessionMessageButtonTap: function(btn) {
 
     var messageField = this.getSessionMessageField(),
+        sendButton = this.getSendSessionMessageButton(),
         peer = this.activePeer,
         text = messageField.getValue();
 
@@ -239,6 +240,7 @@ Ext.define('GS.controller.Sessions', {
 
     // Reset if success.
     messageField.reset();
+    sendButton.disable(); 
   },
 
   onSendComposeMessageButtonTap: function(btn) {
