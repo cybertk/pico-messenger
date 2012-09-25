@@ -2,7 +2,7 @@ var BOSH_SERVICE = '/xmpp-httpbind';
 var connection = null;
 
 // Debug only, removed.
-var __JID = 'web@10.60.19.55';
+var __JID = 'web@ejabberd.local'
 var __PASSWORD = 'web';
 
 function log(msg) 
