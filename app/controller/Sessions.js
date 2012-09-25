@@ -181,7 +181,43 @@ Ext.define('GS.controller.Sessions', {
     
     var peer = this.getComposePeerField().getValue();
 
+    var msg = {
+      direction: 'tx',
+      time: Date.now(),
+      text: text
+    };
+
+    this.messageStore.add(msg);
     this.sendXmppMessage(peer, text);
+
+    this.redirectToSession(peer);
+  },
+
+  redirectToSession: function(peer) {
+
+    this.session = Ext.widget('session');
+    //}
+
+    this.session.setTitle(peer);
+    this.getMain().pop();
+    this.getMain().push(this.session)
+
+    this.messageStore.removeAll();
+
+    // Setup filter.
+    this.messageStore.clearFilter();
+    this.messageStore.filter([
+      {
+        property: 'session_id',
+        // TODO
+        value: 1
+      }
+    ]);
+
+    this.messageStore.load({
+      callback: this.onSessionMessagesStoreLoad,
+      scope: this,
+    });
   },
 
   sendXmppMessage: function(peer, text) {
