@@ -238,11 +238,12 @@ Ext.define('GS.controller.Sessions', {
     // Add session.
     var sessionStore = Ext.getStore('Sessions');
 
-    var session = {
-      peer: peer
-    };
+    var idx = sessionStore.findExact('peer', peer);
+    if (idx == -1) {
 
-    sessionStore.add(session);
+      sessionStore.add({ peer: peer});
+      console.log("Create new seesion ");
+    }
     sessionStore.sync();
 
     this.redirectToSession(peer);
