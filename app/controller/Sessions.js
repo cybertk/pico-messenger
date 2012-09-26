@@ -21,7 +21,8 @@ Ext.define('GS.controller.Sessions', {
     control: {
       main: {
         push: 'onMainPush',
-        pop: 'onMainPop'
+        pop: 'onMainPop',
+        initialize: 'init'
       },
 
       sessions: {
@@ -44,6 +45,14 @@ Ext.define('GS.controller.Sessions', {
       currentSession: undefined,
       activeNavItem: undefined
     }
+  },
+
+  init: function() {
+
+    console.log("rolling in the deep");
+    // TODO find somewhere better to carry init xmpp code.
+    // XMPP Auth and listening.
+    xmpp_init(this.onXmppMessage);
   },
 
   onMainPush: function(view, item) {
@@ -99,6 +108,32 @@ Ext.define('GS.controller.Sessions', {
 
   initSessions: function() {
     this.messageStore = Ext.getStore('SessionMessages');
+  },
+  
+  onXmppMessage: function(msg) {
+    var to = msg.getAttribute('to');
+    var from = msg.getAttribute('from');
+    var type = msg.getAttribute('type');
+    var elems = msg.getElementsByTagName('body');
+
+    if (type == "chat" && elems.length > 0) {
+
+      var text = Strophe.getText(elems[0]);
+
+	    log('recv from: ' + from + ' ' + text);
+
+      var msg = {
+        direction: 'rx',
+        time: Date.now(),
+        text: text
+      };
+
+      var controller = GS.app.getController('Sessions');
+
+      controller.messageStore.add(msg);
+    }
+
+    return true;
   },
 
   initSession: function() {

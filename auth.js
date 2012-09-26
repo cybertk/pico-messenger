@@ -1,5 +1,6 @@
 var BOSH_SERVICE = '/xmpp-httpbind';
 var connection = null;
+var inited = false;
 
 // Debug only, removed.
 var __JID = 'web@ejabberd.local'
@@ -28,7 +29,7 @@ function onConnect(status)
 	log('ECHOBOT: Send a message to ' + connection.jid + 
 	    ' to talk to me.');
 
-	connection.addHandler(onMessage, null, 'message', null, null,  null); 
+	//connection.addHandler(_onMessage, null, 'message', null, null,  null); 
 	connection.send($pres().tree());
     }
 }
@@ -57,7 +58,10 @@ function onMessage(msg) {
     return true;
 }
 
-function xmpp_init() {
+function xmpp_init(cb) {
+
+  if (inited) return;
+
   connection = new Strophe.Connection(BOSH_SERVICE);
 
   // Uncomment the following lines to spy on the wire traffic.
@@ -69,5 +73,7 @@ function xmpp_init() {
 
   connection.connect(__JID, __PASSWORD, onConnect);
 
+	connection.addHandler(cb, null, 'message', null, null,  null); 
+  inited = true;
   //connection.disconnect();
 }

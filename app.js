@@ -13,9 +13,6 @@ Ext.application({
 
   launch: function() {
 
-    // XMPP Auth and listening.
-    xmpp_init();
-
     Ext.Viewport.add({
       xtype: 'mainpanel'
     });
