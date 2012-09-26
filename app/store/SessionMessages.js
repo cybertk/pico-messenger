@@ -4,6 +4,7 @@ Ext.define('GS.store.SessionMessages', {
   config: {
     model: 'GS.model.Message',
 
+    /*
     remoteFilter: true,
 
     proxy: {
@@ -12,6 +13,12 @@ Ext.define('GS.store.SessionMessages', {
       reader: {
         type: 'json'
       }
+    }
+    */
+
+    proxy: {
+      type: 'localstorage',
+      id: 'session-messages'
     }
   }
 });

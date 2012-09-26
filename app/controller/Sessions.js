@@ -11,6 +11,7 @@ Ext.define('GS.controller.Sessions', {
       session: 'session',
       messageList: "session messagelist",
       sendSessionMessageButton: 'session #sendMessageButton',
+      sessionMessageField: "session #messageField",
       editMessagesButton: '#editMessagesButton',
       editSessionsButton: '#editSessionsButton',
       composeButton: '#composeButton',
@@ -191,15 +192,23 @@ Ext.define('GS.controller.Sessions', {
   // The SessionMessage is loaded. show them.
   onSessionMessagesStoreLoad: function(records, operation, success) {
 
-    var messageStore = records[0].stores[0];
+    console.log("messagestore: " + records.length + ' loaded');
 
-    this.getMessageList().setStore(messageStore);
+    if (records.length == 0) {
+      return;
+    }
+
+    var messageStore = Ext.getStore('SessionMessages');
+    console.log(messageStore);
+
+    //this.getMessageList().setStore(this.messageStore);
 
   },
 
   onSendSessionMessageButtonTap: function(btn) {
 
-    var text = btn.getParent().child('#messageField').getValue();
+    var messageField = this.getSessionMessageField(),
+        text = messageField.getValue();
 
     var msg = {
       direction: 'tx',
@@ -208,6 +217,7 @@ Ext.define('GS.controller.Sessions', {
     };
 
     this.messageStore.add(msg);
+    this.messageStore.sync();
 
     this.sendXmppMessage(this.currentSession.get('peer'), msg.text);
 
@@ -261,6 +271,7 @@ Ext.define('GS.controller.Sessions', {
     this.messageStore.removeAll();
 
     // Setup filter.
+    /*
     this.messageStore.clearFilter();
     this.messageStore.filter([
       {
@@ -269,6 +280,7 @@ Ext.define('GS.controller.Sessions', {
         value: 1
       }
     ]);
+    */
 
     this.messageStore.load({
       callback: this.onSessionMessagesStoreLoad,
