@@ -1,0 +1,39 @@
+Ext.define('GS.view.Login', {
+  extend: 'Ext.Panel',
+  xtype: 'login',
+
+  requires: [
+    'Ext.form.*'
+  ],
+
+  config: {
+    title: 'Login',
+
+    layout: 'vbox',
+    scrollable: false,
+
+    items: [
+      {
+        xtype: 'formpanel',
+        items: [
+          {
+            xtype: 'fieldset',
+            title: "Login",
+            items: [
+              {
+                xtype: 'textfield',
+                name: "username",
+                placeHolder: "Your jabber ID"
+              },
+              {
+                xtype: 'passwordfield',
+                name: "password",
+                placeHolder: "Your jabber ID"
+              },
+            ]
+          }
+        ]
+      }
+    ]
+  }
+});

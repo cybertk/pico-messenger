@@ -34,7 +34,7 @@ Ext.define("GS.view.Main", {
         },
 
         items: [
-          {xtype: 'sessionlist'}
+          {xtype: 'login'}
         ]
     }
 });

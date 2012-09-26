@@ -7,7 +7,10 @@ Ext.application({
 
  
   controllers: ['Sessions'],
-  views: ['Main'],
+  views: [
+    'Main',
+    "GS.view.Login"
+  ],
   stores: ['Sessions', 'SessionMessages'],
   models: ['Message', 'Session'],
 

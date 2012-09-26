@@ -1,8 +1,4 @@
 var BOSH_SERVICE = '/xmpp-httpbind';
-// Debug only, removed.
-var __JID = 'web@ejabberd.local'
-var __PASSWORD = 'web';
-
 
 Ext.define('GS.controller.Sessions', {
   extend: 'Ext.app.Controller',
@@ -20,7 +16,10 @@ Ext.define('GS.controller.Sessions', {
       composeButton: '#composeButton',
       composePeerField: "sessioncompose #peerField",
       composeMessageField: "sessioncompose #messageField",
-      sendComposeMessageButton: 'sessioncompose #sendMessageButton'
+      sendComposeMessageButton: 'sessioncompose #sendMessageButton',
+      login: 'login',
+      loginButton: 'login #loginButton',
+      registerButton: 'login #registerButton'
     },
 
     control: {
@@ -56,6 +55,9 @@ Ext.define('GS.controller.Sessions', {
       },
       composeButton: {
         tap: 'onComposeButtonTap'
+      },
+      loginButton: {
+        tap: 'onLoginButtonTap'
       }
     }
   },
@@ -71,9 +73,9 @@ Ext.define('GS.controller.Sessions', {
 
     // TODO find somewhere better to carry init xmpp code.
     // XMPP Auth and listening.
-    this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
+    //this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
 
-    this.xmppConnection.connect(__JID, __PASSWORD, this.onXmppConnect);
+    //this.xmppConnection.connect(__JID, __PASSWORD, this.onXmppConnect);
   },
 
   onMainPush: function(view, item) {
@@ -340,6 +342,22 @@ Ext.define('GS.controller.Sessions', {
 
 	    me.xmppConnection.send($pres().tree());
 	    me.xmppConnection.addHandler(me.onXmppMessage, null, 'message', null, null,  null); 
+    }
+  },
+
+  onLoginButtonTap: function(btn) {
+
+    var login = this.getLogin(),
+        cred = login.getValues();
+    console.log(cred);
+
+    if (cred.username != '' && cred.password != '') {
+
+      // Disable UI to prevent interaction with users.
+      login.setMasked({xtype: 'loadmask', message: 'Logging in...'});
+      this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
+      this.xmppConnection.connect(cred.username, cred.password,
+          this.onXmppConnect);
     }
   }
 });
