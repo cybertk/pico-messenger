@@ -200,6 +200,16 @@ Ext.define('GS.controller.Sessions', {
     this.messageStore.add(msg);
     this.sendXmppMessage(peer, text);
 
+    // Add session.
+    var sessionStore = Ext.getStore('Sessions');
+
+    var session = {
+      peer: peer
+    };
+
+    sessionStore.add(session);
+    sessionStore.sync();
+
     this.redirectToSession(peer);
   },
 

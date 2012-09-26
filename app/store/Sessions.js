@@ -5,11 +5,8 @@ Ext.define('GS.store.Sessions', {
     model: "GS.model.Session",
 
     proxy: {
-      type: 'ajax',
-      url: 'test/sessions.json',
-      reader: {
-        type: 'json'
-      }
+      type: 'localstorage',
+      id: 'sessions'
     },
 
     autoLoad: true
