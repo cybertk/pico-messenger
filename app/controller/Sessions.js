@@ -41,49 +41,59 @@ Ext.define('GS.controller.Sessions', {
         tap: 'onComposeButtonTap'
       },
 
-      currentSession: undefined
+      currentSession: undefined,
+      activeNavItem: undefined
     }
   },
 
   onMainPush: function(view, item) {
 
-    var editSessionsButton = this.getEditSessionsButton();
-    var editMessagesButton = this.getEditMessagesButton();
-    var composeButton = this.getComposeButton();
-
-    console.log('push ' + item.xtype);
-    if (item.xtype == 'session') {
-
-      composeButton.hide();
-      editSessionsButton.hide();
-      editMessagesButton.show();
-    } else if (item.xtype == 'sessioncompose') {
-
-      composeButton.hide();
-      editSessionsButton.hide();
-    }
+    this.updateNavBar();
   },
 
   onMainPop: function(view, item) {
 
-    var editSessionsButton = this.getEditSessionsButton();
-    var editMessagesButton = this.getEditMessagesButton();
-    var composeButton = this.getComposeButton();
-
-    console.log('pop ' + item.xtype);
     if (item.xtype == 'session') {
 
       // Reset Session.
       this.currentSession = undefined;
+    }
 
-      // Reverse operation of onMainPush
+    this.updateNavBar();
+  },
+
+  // Update navigation bar accroding to currentView.
+  updateNavBar: function() {
+
+    var x = this.getMain().getActiveItem().xtype,
+        editSessionsButton = this.getEditSessionsButton(),
+        editMessagesButton = this.getEditMessagesButton(),
+        composeButton = this.getComposeButton();
+
+    if (x == this.activeNavItem)
+      return;
+
+    // Update activeNavItem.
+    this.activeNavItem = x;
+
+    console.log('nav: ' + x);
+
+    if (x == "sessionlist") {
+
       editMessagesButton.hide();
       editSessionsButton.show();
       composeButton.show();
-    } else if (item.xtype == 'sessioncompose') {
 
-      composeButton.show();
-      editSessionsButton.show();
+    } else if (x == "sessioncompose") {
+
+      editMessagesButton.hide();
+      editSessionsButton.hide();
+      composeButton.hide();
+    } else if (x == "session") {
+
+      editMessagesButton.show();
+      editSessionsButton.hide();
+      composeButton.hide();
     }
   },
 
