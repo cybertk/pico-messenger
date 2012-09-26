@@ -9,7 +9,7 @@ Ext.define('GS.view.SessionList', {
 
   config: {
     title: 'Session List',
-    itemTpl: '{id}, {peer}',
+    itemTpl: '{peer}',
     store: 'Sessions',
   }
 });
