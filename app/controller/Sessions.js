@@ -228,7 +228,7 @@ Ext.define('GS.controller.Sessions', {
 
     // Update message.
     msg.session_id = session_id;
-    msg.time = Date.now();
+    msg.time = new Date();
 
     // TODO validate message.
 

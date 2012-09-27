@@ -8,7 +8,7 @@ Ext.define('GS.view.session.MessageList', {
 
   config: {
     title: 'Session List',
-    itemTpl: '<div class="{direction}">{text}</div>',
+    itemTpl: '<div class="{direction}"><div class="message-text">{text}</div><div class="time">{time:date("g:ia")}</div></div>',
     store: 'SessionMessages',
   }
 });
