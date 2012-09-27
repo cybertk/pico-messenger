@@ -1,6 +1,10 @@
 Ext.define('GS.model.Session', {
   extend: 'Ext.data.Model',
 
+  requires: [
+    'Ext.data.identifier.Uuid'
+  ],
+
   config: {
     identifier: 'uuid',
 

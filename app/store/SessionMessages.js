@@ -1,6 +1,10 @@
 Ext.define('GS.store.SessionMessages', {
   extend: 'Ext.data.Store',
 
+  requires: [
+    'Ext.data.proxy.LocalStorage',
+  ],
+
   config: {
     model: 'GS.model.Message',
 
