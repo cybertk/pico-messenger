@@ -146,7 +146,7 @@ Ext.define('GS.controller.Sessions', {
       var text = Strophe.getText(elems[0]),
           peer = from.split('/')[0];
 
-	    log('recv from: ' + peer + ' ' + text);
+	    console.log('recv from: ' + peer + ' ' + text);
 
       GS.app.getController('Sessions')
         .saveMessage({ peer: peer, direction: 'rx', text: text});
