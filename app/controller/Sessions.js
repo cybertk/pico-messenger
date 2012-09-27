@@ -1,3 +1,9 @@
+var BOSH_SERVICE = '/xmpp-httpbind';
+// Debug only, removed.
+var __JID = 'web@ejabberd.local'
+var __PASSWORD = 'web';
+
+
 Ext.define('GS.controller.Sessions', {
   extend: 'Ext.app.Controller',
 
@@ -51,21 +57,23 @@ Ext.define('GS.controller.Sessions', {
       composeButton: {
         tap: 'onComposeButtonTap'
       }
-    },
-
-    // Peer of current active session.
-    activePeer: undefined,
-    activeNavItem: undefined
+    }
   },
+
+  // Peer of current active session.
+  activePeer: '',
+  activeNavItem: undefined,
+
+  xmppConnection: undefined,
 
   // @overide
   init: function() {
 
-    this.activePeer = '';
-
     // TODO find somewhere better to carry init xmpp code.
     // XMPP Auth and listening.
-    xmpp_init(this.onXmppMessage);
+    this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
+
+    this.xmppConnection.connect(__JID, __PASSWORD, this.onXmppConnect);
   },
 
   onMainPush: function(view, item) {
@@ -186,6 +194,8 @@ Ext.define('GS.controller.Sessions', {
   // Show session detail and load the messages.
   onSessionTap: function(list, idx, el, record) {
 
+    if (this.sessionTaped) return;
+    this.seesionTaped = true;
     this.switchSession(record);
   },
 
@@ -279,7 +289,7 @@ Ext.define('GS.controller.Sessions', {
       .cnode(Strophe.xmlElement('body'))
       .t(text);
 
-    connection.send(msg.tree());
+    this.xmppConnection.send(msg.tree());
   },
 
   // Compose new message.
@@ -311,4 +321,25 @@ Ext.define('GS.controller.Sessions', {
     // Trigger message field validation.
     messageField.fireEvent('keyup', messageField);
   },
+
+  onXmppConnect: function(status) {
+
+    if (status == Strophe.Status.CONNECTING) {
+      console.log('Strophe is connecting.');
+    } else if (status == Strophe.Status.CONNFAIL) {
+      console.log('Strophe failed to connect.');
+    } else if (status == Strophe.Status.DISCONNECTING) {
+	    console.log('Strophe is disconnecting.');
+    } else if (status == Strophe.Status.DISCONNECTED) {
+      console.log('Strophe is disconnected.');
+    } else if (status == Strophe.Status.CONNECTED) {
+
+      var me = GS.app.getController('Sessions');
+
+      console.log('Strophe is connected.');
+
+	    me.xmppConnection.send($pres().tree());
+	    me.xmppConnection.addHandler(me.onXmppMessage, null, 'message', null, null,  null); 
+    }
+  }
 });
