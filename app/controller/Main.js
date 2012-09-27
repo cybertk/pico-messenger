@@ -52,6 +52,9 @@ Ext.define('GS.controller.Main', {
       composeButton: {
         tap: 'onComposeButtonTap'
       },
+      login: {
+        show: 'onLoginShow'
+      },
       loginButton: {
         tap: 'onLoginButtonTap'
       }
@@ -62,13 +65,24 @@ Ext.define('GS.controller.Main', {
   activePeer: '',
   activeNavItem: undefined,
 
-  // current active jid(local side).
-  activeJid: '',
+  // current active credential(local side, username/password).
+  activeCred: null,
 
   xmppConnection: undefined,
 
   // @overide
-  init: function() {
+  onLoginShow: function() {
+
+    var me = this;
+
+    // Fetch credential from localStorage.
+    me.activeCred = JSON.parse(localStorage.getItem('account'));
+
+    if (!me.activeCred) return;
+
+    console.log('auto login with ' + me.activeCred.username);
+    // Auto login.
+    me.doLogin(me.activeCred);
   },
 
   onMainPush: function(view, item) {
@@ -278,7 +292,7 @@ Ext.define('GS.controller.Main', {
     console.log('send to ' + peer + ': ' + text);
 
     var msg = $msg({
-      from: this.activeJid,
+      from: this.activeCred.username,
       to: peer
       })
       .cnode(Strophe.xmlElement('body'))
@@ -319,24 +333,22 @@ Ext.define('GS.controller.Main', {
 
   onXmppConnect: function(status) {
 
-    var me = GS.app.getController('Sessions'),
+    var me = GS.app.getController('Main'),
         viewport = Ext.Viewport;
-
-    console.log(Ext.Viewport.getActiveItem());
 
     if (status == Strophe.Status.CONNECTING) {
       console.log('Strophe is connecting.');
     } else if (status == Strophe.Status.CONNFAIL) {
 
       viewport.setMasked(false);
-      me.activeJid = '';
+      me.activeCred = null;
 
       console.log('Strophe failed to connect.');
     } else if (status == Strophe.Status.DISCONNECTING) {
 	    console.log('Strophe is disconnecting.');
     } else if (status == Strophe.Status.DISCONNECTED) {
       viewport.setMasked(false);
-      me.activeJid = '';
+      me.activeCred = null;
 
       console.log('Strophe is disconnected.');
     } else if (status == Strophe.Status.CONNECTED) {
@@ -350,8 +362,30 @@ Ext.define('GS.controller.Main', {
       viewport.removeAll(true, false);
       viewport.setActiveItem({ xtype: 'main' });
 
-      console.log('Strophe is connected. ' + me.activeJid);
+      // Save credential persist.
+      localStorage.setItem('account', JSON.stringify(me.activeCred));
+
+      console.log('Strophe is connected. ' + me.activeCred.username);
     }
+  },
+
+  doLogin: function(cred) {
+
+    var me = GS.app.getController('Main');
+
+    // Disable UI to prevent interaction with users.
+    //Ext.Viewport.setHidden(true);
+    Ext.Viewport.setMasked({xtype: 'loadmask', message: 'Logging in...'});
+
+    // Save current credential.
+    me.activeCred = { 
+      username: cred.username,
+      password: cred.password
+    };
+
+    me.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
+    me.xmppConnection.connect(cred.username, cred.password,
+        me.onXmppConnect);
   },
 
   onLoginButtonTap: function(btn) {
@@ -362,16 +396,7 @@ Ext.define('GS.controller.Main', {
 
     if (cred.username != '' && cred.password != '') {
 
-      // Disable UI to prevent interaction with users.
-      //Ext.Viewport.setHidden(true);
-      Ext.Viewport.setMasked({xtype: 'loadmask', message: 'Logging in...'});
-
-      // Save current JID.
-      me.activeJid = cred.username;
-
-      me.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
-      me.xmppConnection.connect(cred.username, cred.password,
-          me.onXmppConnect);
+      me.doLogin(cred);
     }
   },
 
