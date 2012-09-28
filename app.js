@@ -7,6 +7,7 @@ Ext.application({
 
  
   controllers: [
+    'Main',
     'Sessions',
     'Compose'
   ],
@@ -27,7 +28,7 @@ Ext.application({
   launch: function() {
 
     Ext.Viewport.add({
-      xtype: 'login',
+      xtype: 'main',
     });
   }
 });
