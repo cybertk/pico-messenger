@@ -1,41 +1,14 @@
 Ext.define("GS.view.Main", {
-    extend: 'Ext.navigation.View',
-    //extend: 'Ext.Panel',
-    xtype: 'mainpanel',
+    extend: 'Ext.tab.Panel',
+    xtype: 'main',
 
-    requires: [
-        'GS.view.SessionList',
-        'GS.view.Compose'
-    ],
     config: {
 
-        navigationBar: {
-          items: [
-            {
-              xtype: 'button',
-              id: 'editSessionsButton',
-              text: 'edit',
-              align: 'left'
-            },
-            {
-              xtype: 'button',
-              id: 'editMessagesButton',
-              text: 'edit',
-              align: 'right',
-              hidden: true
-            },
-            {
-              xtype: 'button',
-              id: 'composeButton',
-              iconMask: true,
-              iconCls: 'compose',
-              align: 'right'
-            }
-          ]
-        },
+      tabBarPosition: 'bottom',
 
-        items: [
-          {xtype: 'login'}
-        ]
+      items: [
+        { xclass: 'GS.view.session.Card' },
+        { xclass: 'GS.view.Compose' }
+      ],
     }
 });

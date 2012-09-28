@@ -9,16 +9,19 @@ Ext.application({
   controllers: ['Sessions'],
   views: [
     'Main',
-    "GS.view.Login"
+    "Login",
+    
+    "session.Card",
+    "session.List"
   ],
+
   stores: ['Sessions', 'SessionMessages'],
   models: ['Message', 'Session'],
 
   launch: function() {
 
     Ext.Viewport.add({
-      xtype: 'mainpanel',
-      navigationBar: false
+      xtype: 'login',
     });
   }
 });

@@ -5,7 +5,8 @@ Ext.define('GS.controller.Sessions', {
 
   config: {
     refs: {
-      main: 'mainpanel',
+      main: 'main',
+      sessionContainer: 'sessioncontainer',
       sessions: "sessionlist",
       session: 'session',
       messageList: "session messagelist",
@@ -183,7 +184,7 @@ Ext.define('GS.controller.Sessions', {
     //}
     //
     this.session.setTitle(peer);
-    this.getMain().push(this.session)
+    this.getSessionContainer().push(this.session)
 
     this.messageStore.filter('session_id', session_id);
 
@@ -323,36 +324,38 @@ Ext.define('GS.controller.Sessions', {
 
   onXmppConnect: function(status) {
 
-    var me = GS.app.getController('Sessions');
+    var me = GS.app.getController('Sessions'),
+        viewport = Ext.Viewport;
 
-    console.log(me.getLogin().child('#titlebar'));
+    console.log(Ext.Viewport.getActiveItem());
 
     if (status == Strophe.Status.CONNECTING) {
       console.log('Strophe is connecting.');
     } else if (status == Strophe.Status.CONNFAIL) {
 
-      me.getMain().setMasked(false);
+      viewport.setMasked(false);
       me.activeJid = '';
 
       console.log('Strophe failed to connect.');
     } else if (status == Strophe.Status.DISCONNECTING) {
 	    console.log('Strophe is disconnecting.');
     } else if (status == Strophe.Status.DISCONNECTED) {
-      me.getMain().setMasked(false);
+      viewport.setMasked(false);
       me.activeJid = '';
 
       console.log('Strophe is disconnected.');
     } else if (status == Strophe.Status.CONNECTED) {
 
-      me.getMain().setMasked(false);
-
-      console.log('Strophe is connected. ' + me.activeJid);
+      viewport.setMasked(false);
 
 	    me.xmppConnection.send($pres().tree());
 	    me.xmppConnection.addHandler(me.onXmppMessage, null, 'message', null, null,  null); 
 
-      me.sessionList = Ext.widget('sessionlist');
-      me.getMain().push(me.sessionList);
+      // Remove login FormPanel, and activate TabPanel.
+      viewport.removeAll(true, false);
+      viewport.setActiveItem({ xtype: 'main' });
+
+      console.log('Strophe is connected. ' + me.activeJid);
     }
   },
 
@@ -365,7 +368,8 @@ Ext.define('GS.controller.Sessions', {
     if (cred.username != '' && cred.password != '') {
 
       // Disable UI to prevent interaction with users.
-      me.getMain().setMasked({xtype: 'loadmask', message: 'Logging in...'});
+      //Ext.Viewport.setHidden(true);
+      Ext.Viewport.setMasked({xtype: 'loadmask', message: 'Logging in...'});
 
       // Save current JID.
       me.activeJid = cred.username;

@@ -1,4 +1,4 @@
-Ext.define('GS.view.SessionList', {
+Ext.define('GS.view.session.List', {
   extend: 'Ext.List',
   xtype: 'sessionlist',
 
