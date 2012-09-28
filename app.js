@@ -6,10 +6,16 @@ Ext.application({
   ],
 
  
-  controllers: ['Sessions'],
+  controllers: [
+    'Sessions',
+    'Compose'
+  ],
+
   views: [
     'Main',
     "Login",
+
+    "Compose",
     
     "session.Card",
     "session.List"

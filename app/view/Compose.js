@@ -1,13 +1,9 @@
 Ext.define('GS.view.Compose', {
-  extend: 'Ext.Panel',
-  xtype: 'sessioncompose',
-
-  requires: [
-    'GS.view.session.SendBar',
-  ],
+  extend: 'Ext.form.Panel',
+  xtype: 'compose',
 
   config: {
-    title: 'New Message',
+    title: 'Compose',
 
     layout: 'vbox',
     scrollable: false,
@@ -15,17 +11,34 @@ Ext.define('GS.view.Compose', {
     items: [
       {
         xtype: 'textfield',
-        label: 'To:',
-        labelWidth: 50,
-        placeHolder: "Your friend's Jabber ID",
-        id: 'peerField'
+        name: 'peer',
+        placeHolder: "Enter your friend's address"
       },
       {
-        xtype: 'panel',
-        flex: 1
+        xtype: 'textareafield',
+        name: 'text',
+        placeHolder: "Text Message"
       },
       {
-        xtype: 'messagesendbar'
+        xtype: 'toolbar',
+
+        layout: {
+          type: 'hbox',
+          align: 'center',
+          pack: 'end'
+        },
+        
+        items: [
+          {
+            xtype: 'button',
+            text: '+'
+          },
+          { 
+            xtype: 'button',
+            text: 'Send',
+            id: 'sendButton'
+          }
+        ]
       }
     ]
   }

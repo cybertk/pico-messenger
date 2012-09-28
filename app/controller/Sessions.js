@@ -9,6 +9,7 @@ Ext.define('GS.controller.Sessions', {
       sessionContainer: 'sessioncontainer',
       sessions: "sessionlist",
       session: 'session',
+      compose: 'compose',
       messageList: "session messagelist",
       sendSessionMessageButton: 'session #sendMessageButton',
       sessionMessageField: "session #messageField",
@@ -29,6 +30,11 @@ Ext.define('GS.controller.Sessions', {
         pop: 'onMainPop',
       },
 
+
+      // TODO ondemand register.
+      compose: {
+        send: 'onComposeSend'
+      },
       sessions: {
         initialize: 'initSessions',
         itemtap: 'onSessionTap'
@@ -273,8 +279,8 @@ Ext.define('GS.controller.Sessions', {
 
   redirectToSession: function(session) {
 
-    this.getMain().pop();
-
+    this.getSessionContainer().pop();
+    this.getMain().setActiveItem(0);
     this.switchSession(session);
   },
 
@@ -378,5 +384,19 @@ Ext.define('GS.controller.Sessions', {
       me.xmppConnection.connect(cred.username, cred.password,
           me.onXmppConnect);
     }
+  },
+
+  onComposeSend: function(msg) {
+    console.log('recv' + msg);
+
+    // Update Message.
+    msg.direction = 'tx';
+
+    session = this.saveMessage(msg);
+    this.sendXmppMessage(msg.peer, msg.text);
+
+    this.redirectToSession(session);
   }
+
+
 });
