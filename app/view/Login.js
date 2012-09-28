@@ -10,6 +10,10 @@ Ext.define('GS.view.Login', {
 
     items: [
       {
+        xtype: 'titlebar',
+        title: 'Authentication is required.'
+      },
+      {
         xtype: 'textfield',
         name: 'username',
         placeHolder: "Enter your username here"

@@ -66,16 +66,13 @@ Ext.define('GS.controller.Sessions', {
   activePeer: '',
   activeNavItem: undefined,
 
+  // current active jid(local side).
+  activeJid: '',
+
   xmppConnection: undefined,
 
   // @overide
   init: function() {
-
-    // TODO find somewhere better to carry init xmpp code.
-    // XMPP Auth and listening.
-    //this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
-
-    //this.xmppConnection.connect(__JID, __PASSWORD, this.onXmppConnect);
   },
 
   onMainPush: function(view, item) {
@@ -285,7 +282,7 @@ Ext.define('GS.controller.Sessions', {
     console.log('send to ' + peer + ': ' + text);
 
     var msg = $msg({
-      from: __JID,
+      from: this.activeJid,
       to: peer
       })
       .cnode(Strophe.xmlElement('body'))
@@ -326,38 +323,56 @@ Ext.define('GS.controller.Sessions', {
 
   onXmppConnect: function(status) {
 
+    var me = GS.app.getController('Sessions');
+
+    console.log(me.getLogin().child('#titlebar'));
+
     if (status == Strophe.Status.CONNECTING) {
       console.log('Strophe is connecting.');
     } else if (status == Strophe.Status.CONNFAIL) {
+
+      me.getMain().setMasked(false);
+      me.activeJid = '';
+
       console.log('Strophe failed to connect.');
     } else if (status == Strophe.Status.DISCONNECTING) {
 	    console.log('Strophe is disconnecting.');
     } else if (status == Strophe.Status.DISCONNECTED) {
+      me.getMain().setMasked(false);
+      me.activeJid = '';
+
       console.log('Strophe is disconnected.');
     } else if (status == Strophe.Status.CONNECTED) {
 
-      var me = GS.app.getController('Sessions');
+      me.getMain().setMasked(false);
 
-      console.log('Strophe is connected.');
+      console.log('Strophe is connected. ' + me.activeJid);
 
 	    me.xmppConnection.send($pres().tree());
 	    me.xmppConnection.addHandler(me.onXmppMessage, null, 'message', null, null,  null); 
+
+      me.sessionList = Ext.widget('sessionlist');
+      me.getMain().push(me.sessionList);
     }
   },
 
   onLoginButtonTap: function(btn) {
 
-    var login = this.getLogin(),
-        cred = login.getValues();
+    var me = this,
+        cred = me.getLogin().getValues();
     console.log(cred);
 
     if (cred.username != '' && cred.password != '') {
 
       // Disable UI to prevent interaction with users.
-      login.setMasked({xtype: 'loadmask', message: 'Logging in...'});
-      this.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
-      this.xmppConnection.connect(cred.username, cred.password,
-          this.onXmppConnect);
+      me.getMain().setMasked({xtype: 'loadmask', message: 'Logging in...'});
+
+      // Save current JID.
+      me.activeJid = cred.username;
+
+      me.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
+      me.xmppConnection.connect(cred.username, cred.password,
+          me.onXmppConnect);
     }
   }
 });

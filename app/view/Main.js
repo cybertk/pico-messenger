@@ -1,5 +1,6 @@
 Ext.define("GS.view.Main", {
     extend: 'Ext.navigation.View',
+    //extend: 'Ext.Panel',
     xtype: 'mainpanel',
 
     requires: [
