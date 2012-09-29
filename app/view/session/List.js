@@ -9,7 +9,14 @@ Ext.define('GS.view.session.List', {
 
   config: {
     title: 'Session List',
-    itemTpl: '{peer}',
     store: 'Sessions',
-  }
+
+    itemCls: 'session',
+    itemTpl: [
+      '<div class="avatar" stype="background-image: url(avatar.jpeg);"></div>',
+      '<h3>{peer}</h3>',
+      '<h4>{text}</h4>'
+    ]
+  },
+
 });

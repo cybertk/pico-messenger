@@ -17,3 +17,31 @@
 @include sencha-msgbox;
 
 // Your custom code goes here...
+//
+.x-list-item-label > .session {
+
+    font-size: 0.9em;
+    line-height: 2em;
+
+    .avatar {
+
+        background-position: center center;
+        -webkit-border-radius: 0.5em;
+        float: left;
+        border: 0;
+        border-radius: 0.5em;
+        width: 45px;
+        height: 45px;
+        background-size: 47px auto;
+    }
+
+    h3 {
+        font-weight: bold;
+        margin-left: 60px;
+    }
+
+    h4 {
+        color: #999;
+        margin-left: 60px;
+    }
+}
