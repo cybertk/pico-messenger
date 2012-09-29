@@ -9,16 +9,9 @@ Ext.define('GS.controller.Main', {
       sessionContainer: 'sessioncontainer',
       compose: 'compose',
       login: 'login',
-      loginButton: 'login #loginButton',
-      registerButton: 'login #registerButton'
     },
 
     control: {
-      main: {
-        push: 'onMainPush',
-        pop: 'onMainPop',
-      },
-
       // TODO ondemand register.
       compose: {
         send: 'onComposeSend'
@@ -26,30 +19,12 @@ Ext.define('GS.controller.Main', {
       sessionContainer: {
         send: 'onSessionSend'
       },
-      sessionMessageField: {
-        keyup: "onMessageFieldChange"
-      },
-      composeMessageField: {
-        keyup: "onMessageFieldChange"
-      },
-      composePeerField: {
-        keyup: "onPeerFieldChange"
-      },
-      sendComposeMessageButton: {
-        tap: 'onSendComposeMessageButtonTap'
-      },
       login: {
-        show: 'onLoginShow'
-      },
-      loginButton: {
-        tap: 'onLoginButtonTap'
+        show: 'onLoginShow',
+        login: 'doLogin',
       }
     }
   },
-
-  // Peer of current active session.
-  activePeer: '',
-  activeNavItem: undefined,
 
   // current active credential(local side, username/password).
   activeCred: null,
@@ -69,57 +44,6 @@ Ext.define('GS.controller.Main', {
     console.log('auto login with ' + me.activeCred.username);
     // Auto login.
     me.doLogin(me.activeCred);
-  },
-
-  onMainPush: function(view, item) {
-
-    this.updateNavBar();
-  },
-
-  onMainPop: function(view, item) {
-
-    if (item.xtype == 'session') {
-
-      // Reset active peer.
-      this.activePeer = '';
-    }
-
-    this.updateNavBar();
-  },
-
-  // Update navigation bar accroding to currentView.
-  updateNavBar: function() {
-
-    var x = this.getMain().getActiveItem().xtype,
-        editSessionsButton = this.getEditSessionsButton(),
-        editMessagesButton = this.getEditMessagesButton(),
-        composeButton = this.getComposeButton();
-
-    if (x == this.activeNavItem)
-      return;
-
-    // Update activeNavItem.
-    this.activeNavItem = x;
-
-    console.log('nav: ' + x);
-
-    if (x == "sessionlist") {
-
-      editMessagesButton.hide();
-      editSessionsButton.show();
-      composeButton.show();
-
-    } else if (x == "sessioncompose") {
-
-      editMessagesButton.hide();
-      editSessionsButton.hide();
-      composeButton.hide();
-    } else if (x == "session") {
-
-      editMessagesButton.show();
-      editSessionsButton.hide();
-      composeButton.hide();
-    }
   },
 
   onXmppMessage: function(msg) {
@@ -152,9 +76,6 @@ Ext.define('GS.controller.Main', {
 
     var peer = session.get('peer'),
         session_id = session.get('id');
-
-    // Update active session.
-    this.activePeer = peer;
 
     // TODO: reuse
     //if (!this.session) {
@@ -222,28 +143,6 @@ Ext.define('GS.controller.Main', {
     this.xmppConnection.send(msg.tree());
   },
 
-  onMessageFieldChange: function(field) {
-
-    var text = field.getValue(),
-        button = field.getParent().child('#sendMessageButton');
-
-    if (text != '' && this.activePeer != '') {
-      button.enable();
-    } else {
-      button.disable();
-    }
-  },
-
-  onPeerFieldChange: function(field) {
-
-    var messageField = this.getComposeMessageField();
-
-    this.activePeer = field.getValue();
-
-    // Trigger message field validation.
-    messageField.fireEvent('keyup', messageField);
-  },
-
   onXmppConnect: function(status) {
 
     var me = GS.app.getController('Main'),
@@ -299,18 +198,6 @@ Ext.define('GS.controller.Main', {
     me.xmppConnection = new Strophe.Connection(BOSH_SERVICE);
     me.xmppConnection.connect(cred.username, cred.password,
         me.onXmppConnect);
-  },
-
-  onLoginButtonTap: function(btn) {
-
-    var me = this,
-        cred = me.getLogin().getValues();
-    console.log(cred);
-
-    if (cred.username != '' && cred.password != '') {
-
-      me.doLogin(cred);
-    }
   },
 
   onSessionSend: function(msg) {

@@ -8,6 +8,7 @@ Ext.application({
  
   controllers: [
     'Main',
+    'Login',
     'Sessions',
     'Compose'
   ],
