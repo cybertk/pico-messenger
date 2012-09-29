@@ -12,7 +12,7 @@ Ext.define('GS.controller.Sessions', {
     },
 
     control: {
-      sessionlist: {
+      sessionList: {
         initialize: 'initSessions',
         itemtap: 'onSessionTap'
       },
@@ -30,7 +30,11 @@ Ext.define('GS.controller.Sessions', {
 
   activePeer: '',
 
+  messageStore: undefined,
+
   initSessions: function() {
+
+    // TODO on-demand loading.
     this.messageStore = Ext.getStore('SessionMessages');
     this.messageStore.load({
       callback: this.onSessionMessagesStoreLoad,
@@ -41,7 +45,6 @@ Ext.define('GS.controller.Sessions', {
   initSession: function() {
     this.messageStore.addAfterListener('addrecords',
         this.onMessageStoreAddRecords, this, {delay:200});
-    console.log('init');
   },
 
   // Show session detail and load the messages.
@@ -75,13 +78,6 @@ Ext.define('GS.controller.Sessions', {
     msg = { peer: this.activePeer, text: text };
 
     sessionContainer.fireEvent('send', msg);
-  },
-
-  redirectToSession: function(session) {
-
-    this.getSessionContainer().pop();
-    this.getMain().setActiveItem(0);
-    this.switchSession(session);
   },
 
   onMessageFieldChange: function(field) {

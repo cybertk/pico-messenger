@@ -19,17 +19,12 @@ Ext.define('GS.controller.Main', {
         pop: 'onMainPop',
       },
 
-
       // TODO ondemand register.
       compose: {
         send: 'onComposeSend'
       },
       sessionContainer: {
-        send: 'onComposeSend'
-      },
-      sessions: {
-        initialize: 'initSessions',
-        itemtap: 'onSessionTap'
+        send: 'onSessionSend'
       },
       sessionMessageField: {
         keyup: "onMessageFieldChange"
@@ -40,17 +35,8 @@ Ext.define('GS.controller.Main', {
       composePeerField: {
         keyup: "onPeerFieldChange"
       },
-      sendMessageButton: {
-        tap: 'onSendMessageButtonTap'
-      },
-      sendSessionMessageButton: {
-        tap: 'onSendSessionMessageButtonTap'
-      },
       sendComposeMessageButton: {
         tap: 'onSendComposeMessageButtonTap'
-      },
-      composeButton: {
-        tap: 'onComposeButtonTap'
       },
       login: {
         show: 'onLoginShow'
@@ -136,19 +122,11 @@ Ext.define('GS.controller.Main', {
     }
   },
 
-  initSessions: function() {
-    this.messageStore = Ext.getStore('SessionMessages');
-    this.messageStore.load({
-      callback: this.onSessionMessagesStoreLoad,
-      scope: this,
-    });
-  },
-  
   onXmppMessage: function(msg) {
-    var to = msg.getAttribute('to');
-    var from = msg.getAttribute('from');
-    var type = msg.getAttribute('type');
-    var elems = msg.getElementsByTagName('body');
+    var from = msg.getAttribute('from'),
+        //to = msg.getAttribute('to'),
+        type = msg.getAttribute('type'),
+        elems = msg.getElementsByTagName('body');
 
     if (type == "chat" && elems.length > 0) {
 
@@ -157,7 +135,7 @@ Ext.define('GS.controller.Main', {
 
 	    console.log('recv from: ' + peer + ' ' + text);
 
-      GS.app.getController('Sessions')
+      GS.app.getController('Main')
         .saveMessage({ peer: peer, direction: 'rx', text: text});
     }
 
@@ -168,15 +146,6 @@ Ext.define('GS.controller.Main', {
     this.messageStore.addAfterListener('addrecords',
         this.onMessageStoreAddRecords, this, {delay:200});
     console.log('init');
-  },
-
-  onMessageStoreAddRecords: function() {
-    console.log('onadd');
-
-    // Scroll to bottom.
-    var scroller = this.getMessageList().getScrollable().getScroller();
-    
-    scroller.scrollToEnd();
   },
 
   switchSession: function(session) {
@@ -200,27 +169,11 @@ Ext.define('GS.controller.Main', {
     console.log("active session: " + peer);
   },
 
-  // Show session detail and load the messages.
-  onSessionTap: function(list, idx, el, record) {
-
-    if (this.sessionTaped) return;
-    this.seesionTaped = true;
-    this.switchSession(record);
-  },
-
-  // The SessionMessage is loaded. show them.
-  onSessionMessagesStoreLoad: function(records, operation, success) {
-
-    console.log("messagestore: " + records.length + ' loaded');
-
-    if (records.length == 0) {
-      return;
-    }
-  },
-
   saveMessage: function(msg) {
 
-    var sessionStore = Ext.getStore('Sessions'),
+    var me = GS.app.getController('Main'),
+        sessionStore = Ext.getStore('Sessions'),
+        messageStore = Ext.getStore('SessionMessages'),
         idx = sessionStore.findExact('peer', msg.peer.toLowerCase()),
         session, session_id;
 
@@ -241,43 +194,11 @@ Ext.define('GS.controller.Main', {
 
     // TODO validate message.
 
-    this.messageStore.add(msg);
-    this.messageStore.sync();
+    console.log(me);
+    messageStore.add(msg);
+    messageStore.sync();
 
     return session;
-  },
-
-  onSendSessionMessageButtonTap: function(btn) {
-
-    var messageField = this.getSessionMessageField(),
-        sendButton = this.getSendSessionMessageButton(),
-        peer = this.activePeer,
-        text = messageField.getValue();
-
-    this.saveMessage({ peer: peer, direction: 'tx', text: text});
-    this.sendXmppMessage(peer, text);
-
-    // Reset if success.
-    messageField.reset();
-    sendButton.disable(); 
-  },
-
-  onSendComposeMessageButtonTap: function(btn) {
-
-    var text = btn.getParent().child('#messageField').getValue(),
-        peer = this.getComposePeerField().getValue(),
-        msg, session;
-
-    msg = {
-      peer: peer,
-      direction: 'tx',
-      text: text
-    };
-
-    session = this.saveMessage(msg);
-    this.sendXmppMessage(peer, text);
-
-    this.redirectToSession(session);
   },
 
   redirectToSession: function(session) {
@@ -301,14 +222,6 @@ Ext.define('GS.controller.Main', {
     this.xmppConnection.send(msg.tree());
   },
 
-  // Compose new message.
-  onComposeButtonTap: function() {
-    
-    this.compose = Ext.widget('sessioncompose');
-
-    this.getMain().push(this.compose);
-  },
-  
   onMessageFieldChange: function(field) {
 
     var text = field.getValue(),
@@ -398,6 +311,14 @@ Ext.define('GS.controller.Main', {
 
       me.doLogin(cred);
     }
+  },
+
+  onSessionSend: function(msg) {
+
+    // Update Message.
+    msg.direction = 'tx';
+    this.saveMessage(msg);
+    this.sendXmppMessage(msg.peer, msg.text);
   },
 
   onComposeSend: function(msg) {
