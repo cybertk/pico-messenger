@@ -88,6 +88,7 @@
      * Extra resources to be copied along when build
      */
     "resources": [
+        'lib',
         "resources/images",
         "resources/icons",
         "resources/startup"
@@ -123,7 +124,7 @@
         "product": "touch",
         "minVersion": 3,
         "debug": false,
-        "logger": "no"
+        "logger": true
     },
 
     /**
